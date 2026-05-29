@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-accent: #06b6d4;
+  --color-accent-light: #22d3ee;
+  --color-accent-dim: #0e7490;
+  --color-surface: #161616;
+  --color-border: #1e1e1e;
+  --color-muted: #6b7280;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #0f0f0f;
+  --foreground: #f0f0f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #0f0f0f;
+  color: #f0f0f0;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 2px;
+}
+
+@keyframes float-up-down {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes float-up-down-reverse {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(14px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 30px #06b6d425, 0 0 60px #06b6d410; }
+  50% { box-shadow: 0 0 50px #06b6d440, 0 0 100px #06b6d420; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-slow-reverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.float-1 { animation: float-up-down 4s ease-in-out infinite; }
+.float-2 { animation: float-up-down-reverse 5s ease-in-out infinite; }
+.float-3 { animation: float-up-down 6.5s ease-in-out infinite 1s; }
+.glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+.spin-slow { animation: spin-slow 25s linear infinite; }
+.spin-reverse { animation: spin-slow-reverse 18s linear infinite; }
+.cursor-blink { animation: blink 1s step-end infinite; }
