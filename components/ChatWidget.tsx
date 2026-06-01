@@ -57,6 +57,10 @@ export default function ChatWidget() {
     greetingAudioRef.current = g
     const b = new Audio('/boot-sound.mp3'); b.preload = 'auto'
     bootAudioRef.current = b
+    // aktifkan :active di iOS (efek hover muncul saat disentuh)
+    const noop = () => {}
+    document.body.addEventListener('touchstart', noop, { passive: true })
+    return () => document.body.removeEventListener('touchstart', noop)
   }, [])
 
   const stopBootSound = () => {

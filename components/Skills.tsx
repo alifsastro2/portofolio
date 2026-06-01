@@ -79,7 +79,7 @@ export default function Skills({ skillCategories: data }: { skillCategories?: Sk
                     return (
                       <span
                         key={item}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-gray-400 bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg hover:border-[#06b6d4]/30 hover:text-[#06b6d4] transition-all duration-200 cursor-default group"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-gray-400 bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg hover:border-[#06b6d4]/30 hover:text-[#06b6d4] active:border-[#06b6d4]/50 active:text-[#06b6d4] transition-all duration-200 cursor-default group"
                       >
                         {logo ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -87,7 +87,7 @@ export default function Skills({ skillCategories: data }: { skillCategories?: Sk
                         ) : Icon ? (
                           <Icon
                             size={12}
-                            className="text-gray-600 group-hover:text-[#06b6d4] transition-colors flex-shrink-0"
+                            className="text-gray-600 group-hover:text-[#06b6d4] group-active:text-[#06b6d4] transition-colors flex-shrink-0"
                           />
                         ) : null}
                         {item}

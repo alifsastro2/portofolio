@@ -124,10 +124,10 @@ export default function About({ about }: { about: AboutContent | null }) {
               {hobbies.map((h) => (
                 <div
                   key={h.label}
-                  className="flex items-center gap-3 p-3 bg-[#161616] border border-[#1e1e1e] rounded-xl hover:border-[#06b6d4]/20 transition-colors group"
+                  className="flex items-center gap-3 p-3 bg-[#161616] border border-[#1e1e1e] rounded-xl hover:border-[#06b6d4]/20 active:border-[#06b6d4]/40 transition-colors group"
                 >
                   <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden transition-transform group-hover:scale-110"
+                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden transition-transform group-hover:scale-110 group-active:scale-110"
                     style={{ backgroundColor: `${h.color}18`, border: `1px solid ${h.color}30` }}
                   >
                     {h.logo ? (

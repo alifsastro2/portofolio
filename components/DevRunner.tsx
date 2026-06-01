@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useCallback, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { getTopScores, submitScore, type ScoreRow } from '@/lib/leaderboard'
 import {
   siFlutter, siNextdotjs, siTypescript, siSupabase,
@@ -7,8 +8,13 @@ import {
 } from 'simple-icons'
 
 const W = 580
-const H = 200
-const GROUND = H - 26
+const H_SMALL = 200
+const H_FULL = 340
+// H & GROUND bisa berubah (small box vs fullscreen). GROUND nempel ke bawah,
+// jadi menambah H = menambah headroom di atas → lompatan tidak kepotong saat fullscreen.
+let H = H_SMALL
+let GROUND = H - 26
+function setGeo(full: boolean) { H = full ? H_FULL : H_SMALL; GROUND = H - 26 }
 const CHAR_H = 104
 const CHAR_W = Math.round(CHAR_H * (1024 / 832)) // aspect ratio frame PNG
 const PX = 46
@@ -85,6 +91,8 @@ export default function DevRunner() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [muted, setMuted] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
+  const [portrait, setPortrait] = useState(false)
 
   // ── Audio (Web Audio API, tanpa file) ──
   const ensureAudio = useCallback(() => {
@@ -226,6 +234,34 @@ export default function DevRunner() {
     setOver(false)
     setSubmitted(false)
   }, [])
+
+  // deteksi orientasi (untuk hint putar HP)
+  useEffect(() => {
+    const check = () => setPortrait(window.matchMedia('(orientation: portrait)').matches)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    const next = !fullscreen
+    setGeo(next)                 // ubah H & GROUND (headroom)
+    const g = s.current          // reset ke idle di geometri baru
+    Object.assign(g, {
+      started: false, gameOver: false, score: 0, speed: 4,
+      py: GROUND - CHAR_H, vy: 0, onGround: true,
+      obstacles: [], particles: [], nextObs: 90, frame: 0, animFrame: 0, animAcc: 0, lastMilestone: 0,
+      bonus: 0, coins: [], popups: [], coinPhase: -1, phase: 0,
+    })
+    setOver(false); setSubmitted(false)
+    setFullscreen(next)
+    // mobile: coba lock landscape (Android); iOS akan gagal → andalkan hint
+    const orient = (screen as unknown as { orientation?: { lock?: (o: string) => Promise<void>; unlock?: () => void } }).orientation
+    try {
+      if (next) orient?.lock?.('landscape')?.catch(() => {})
+      else orient?.unlock?.()
+    } catch {}
+  }, [fullscreen])
 
   const handleSubmit = useCallback(async () => {
     if (submitting || submitted) return
@@ -641,7 +677,7 @@ export default function DevRunner() {
       cancelAnimationFrame(s.current.rafId)
       window.removeEventListener('keydown', onKey)
     }
-  }, [act, spawnParticles, loadBoard, restart, toIdle, playSound])
+  }, [act, spawnParticles, loadBoard, restart, toIdle, playSound, fullscreen])
 
   const rankColor = (i: number) =>
     i === 0 ? 'text-[#06b6d4]' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-amber-600' : 'text-gray-500'
@@ -652,18 +688,37 @@ export default function DevRunner() {
         <p className="font-mono text-[9px] text-gray-700 tracking-[0.3em] uppercase">
           Mini Game · Dev Runner
         </p>
-        <button
-          onClick={toggleMute}
-          className="font-mono text-[10px] text-gray-600 hover:text-[#06b6d4] transition-colors px-2 py-0.5 border border-[#1e1e1e] rounded"
-          aria-label={muted ? 'Unmute' : 'Mute'}
-        >
-          {muted ? '🔇 muted' : '🔊 sound'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleMute}
+            className="font-mono text-[10px] text-gray-600 hover:text-[#06b6d4] transition-colors px-2 py-0.5 border border-[#1e1e1e] rounded"
+            aria-label={muted ? 'Unmute' : 'Mute'}
+          >
+            {muted ? '🔇 muted' : '🔊 sound'}
+          </button>
+          <button
+            onClick={toggleFullscreen}
+            className="font-mono text-[10px] text-gray-600 hover:text-[#06b6d4] transition-colors px-2 py-0.5 border border-[#1e1e1e] rounded"
+            aria-label="Fullscreen"
+          >
+            ⛶ fullscreen
+          </button>
+        </div>
       </div>
 
+      {(() => {
+      const panel = (
       <div
-        className="relative rounded-xl overflow-hidden border border-[#1e1e1e] hover:border-[#06b6d4]/20 transition-colors"
-        style={{ boxShadow: '0 0 30px #06b6d408' }}
+        className={
+          fullscreen
+            ? 'fixed z-[95] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl overflow-hidden border border-[#06b6d4]/30 shadow-2xl'
+            : 'relative rounded-xl overflow-hidden border border-[#1e1e1e] hover:border-[#06b6d4]/20 transition-colors'
+        }
+        style={
+          fullscreen
+            ? { boxShadow: '0 0 60px #06b6d420', width: 'min(96vw, calc(80vh * 1.706))' }
+            : { boxShadow: '0 0 30px #06b6d408' }
+        }
       >
         <canvas
           ref={canvasRef}
@@ -673,6 +728,27 @@ export default function DevRunner() {
           style={{ display: 'block' }}
           onClick={act}
         />
+
+        {/* Tombol exit (fullscreen) */}
+        {fullscreen && (
+          <button
+            onClick={toggleFullscreen}
+            className="absolute top-2 right-2 z-20 w-8 h-8 rounded-lg bg-[#0f0f0f]/80 border border-[#06b6d4]/40 text-[#06b6d4] flex items-center justify-center hover:bg-[#06b6d4]/15 transition-colors"
+            aria-label="Exit fullscreen"
+          >
+            ✕
+          </button>
+        )}
+
+        {/* Hint putar HP (mobile portrait saat fullscreen) */}
+        {fullscreen && portrait && (
+          <div className="absolute inset-0 z-30 bg-[#0d0d0f]/95 flex flex-col items-center justify-center gap-3 sm:hidden">
+            <span className="text-4xl animate-pulse">🔄</span>
+            <p className="font-mono text-[#06b6d4] text-sm">Rotate your phone</p>
+            <p className="font-mono text-gray-600 text-[10px]">landscape for the best experience</p>
+            <button onClick={toggleFullscreen} className="mt-2 font-mono text-[10px] text-gray-500 underline">exit</button>
+          </div>
+        )}
 
         {/* ── Leaderboard overlay (scroll dari atas agar tidak terpotong) ── */}
         {over && (
@@ -742,6 +818,17 @@ export default function DevRunner() {
           </div>
         )}
       </div>
+      )
+      return fullscreen
+        ? createPortal(
+            <>
+              <div className="fixed inset-0 z-[90] bg-black/85 backdrop-blur-sm" onClick={toggleFullscreen} />
+              {panel}
+            </>,
+            document.body
+          )
+        : panel
+      })()}
 
       <p className="font-mono text-[9px] text-gray-600 mt-2 text-right">
         space / tap · jump · esc quit
