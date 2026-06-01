@@ -633,14 +633,16 @@ export default function DevRunner() {
         ctx.strokeRect(hitX, hitY, hitW, hitH)
       }
 
-      // HUD
+      // HUD — geser skor ke kiri saat fullscreen biar tidak ketutupan tombol ✕
+      const scoreX = H > H_SMALL ? W - 40 : W - 8
       ctx.fillStyle = '#06b6d4'
       ctx.font = 'bold 11px monospace'
       ctx.textAlign = 'right'
-      ctx.fillText(String(g.score).padStart(5, '0'), W - 8, 16)
+      ctx.textBaseline = 'alphabetic' // eksplisit biar posisi skor konsisten
+      ctx.fillText(String(g.score).padStart(5, '0'), scoreX, 16)
       ctx.fillStyle = '#1f2937'
       ctx.font = '9px monospace'
-      ctx.fillText(`HI ${String(g.hiScore).padStart(5, '0')}`, W - 8, 27)
+      ctx.fillText(`HI ${String(g.hiScore).padStart(5, '0')}`, scoreX, 27)
 
       if (g.speed > 5.5) {
         // di bawah badge fase biar tidak menumpuk
