@@ -1,11 +1,14 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { animate, stagger } from 'animejs'
 import Image from 'next/image'
 import DevRunner from './DevRunner'
 
 export default function Hero() {
   const [statsOpen, setStatsOpen] = useState(false)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const touchShow = () => { if (hideTimer.current) clearTimeout(hideTimer.current); setStatsOpen(true) }
+  const touchHide = () => { hideTimer.current = setTimeout(() => setStatsOpen(false), 1600) }
 
   useEffect(() => {
     const runAnimations = () => {
@@ -124,10 +127,12 @@ export default function Hero() {
 
         {/* ── Right: Photo + Stats ── */}
         <div className="hero-photo opacity-0 order-1 lg:order-2 flex justify-center lg:justify-end">
-          {/* Outer wrapper — hover (desktop) / tap (mobile) untuk munculkan badges */}
+          {/* Outer wrapper — hover (desktop) / touch (mobile) untuk munculkan badges */}
           <div
-            className="group relative flex items-center justify-center px-12 sm:px-20 cursor-pointer"
-            onClick={() => setStatsOpen((v) => !v)}
+            className="group relative flex items-center justify-center px-12 sm:px-20"
+            onTouchStart={touchShow}
+            onTouchEnd={touchHide}
+            onTouchCancel={touchHide}
           >
 
             {/* Height badge — sejajar bahu (kiri) */}

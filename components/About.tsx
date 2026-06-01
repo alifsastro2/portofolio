@@ -43,6 +43,9 @@ export default function About({ about }: { about: AboutContent | null }) {
   const sectionRef = useRef<HTMLElement>(null)
   const animatedRef = useRef(false)
   const [swapped, setSwapped] = useState(false)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const touchShow = () => { if (hideTimer.current) clearTimeout(hideTimer.current); setSwapped(true) }
+  const touchHide = () => { hideTimer.current = setTimeout(() => setSwapped(false), 1600) }
 
   const bio_1    = about?.bio_1    ?? defaults.bio_1
   const bio_2    = about?.bio_2    ?? defaults.bio_2
@@ -80,8 +83,10 @@ export default function About({ about }: { about: AboutContent | null }) {
         <div className="space-y-6">
           <div className="about-item opacity-0 flex justify-center lg:justify-start">
             <div
-              className="group relative w-72 sm:w-80 aspect-[3/4] cursor-pointer"
-              onClick={() => setSwapped((v) => !v)}
+              className="group relative w-72 sm:w-80 aspect-[3/4]"
+              onTouchStart={touchShow}
+              onTouchEnd={touchHide}
+              onTouchCancel={touchHide}
             >
               <div className="absolute inset-0 rounded-2xl border border-[#06b6d4]/20 bg-[#161616] overflow-hidden">
                 {/* Foto default (lihat samping) */}
