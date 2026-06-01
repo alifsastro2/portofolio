@@ -83,6 +83,12 @@ body {
 }
 .overlay-in { animation: overlay-in 220ms ease-out; }
 
+@keyframes boot-bar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.boot-bar { animation: boot-bar 1.3s ease-in-out forwards; }
+
 /* Horizontal carousel scrollbar (Certificates) — samakan dengan scrollbar halaman */
 .cert-scroll::-webkit-scrollbar {
   height: 4px;

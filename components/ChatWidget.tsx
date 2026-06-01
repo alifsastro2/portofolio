@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
-import { FaRobot } from 'react-icons/fa'
 import { IoClose, IoSend } from 'react-icons/io5'
+import { IronHelmet, ArcReactor } from './IronManUI'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
@@ -12,14 +12,18 @@ const SUGGESTIONS = [
   "How can I contact Alif?",
 ]
 
+// Cyan "arc reactor" palette (matches site theme)
+const GOLD = '#06b6d4'   // accent (cyan)
+const RED = '#0e7490'    // deep cyan
+
 function TypingIndicator() {
   return (
     <div className="flex items-center gap-1 px-4 py-3">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="w-1.5 h-1.5 rounded-full bg-[#06b6d4]/60 animate-bounce"
-          style={{ animationDelay: `${i * 0.15}s` }}
+          className="w-1.5 h-1.5 rounded-full animate-bounce"
+          style={{ backgroundColor: `${GOLD}99`, animationDelay: `${i * 0.15}s` }}
         />
       ))}
     </div>
@@ -31,21 +35,30 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm Alif's AI assistant 👋 Ask me anything about his skills, projects, or availability!",
+      content:
+        "Good day. I am Jarvis, Mr. Zidane's personal AI assistant. How may I assist you — perhaps his skills, projects, or availability?",
     },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [booting, setBooting] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const toggle = () => {
+    if (open) { setOpen(false); return }
+    setOpen(true)
+    setBooting(true)
+    setTimeout(() => setBooting(false), 1500)
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 100)
-  }, [open])
+    if (open && !booting) setTimeout(() => inputRef.current?.focus(), 100)
+  }, [open, booting])
 
   async function send(text: string) {
     if (!text.trim() || loading) return
@@ -82,28 +95,64 @@ export default function ChatWidget() {
     <>
       {/* Chat panel */}
       <div
-        className={`fixed bottom-24 right-6 z-50 w-[340px] sm:w-[380px] flex flex-col bg-[#161616] border border-[#1e1e1e] rounded-2xl shadow-2xl transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-24 right-6 z-50 w-[340px] sm:w-[380px] flex flex-col bg-[#161616] rounded-2xl shadow-2xl transition-all duration-300 origin-bottom-right ${
           open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-90 pointer-events-none'
         }`}
-        style={{ maxHeight: '520px' }}
+        style={{ maxHeight: '520px', border: `1px solid ${GOLD}30`, boxShadow: `0 0 40px ${RED}25` }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e] flex-shrink-0">
+        {/* Boot-up overlay */}
+        {booting && (
+          <div className="absolute inset-0 z-20 rounded-2xl bg-[#0d0d0f] flex flex-col items-center justify-center gap-4 overlay-in">
+            <ArcReactor size={64} />
+            <div className="text-center">
+              <p className="font-mono font-bold text-sm tracking-[0.3em]" style={{ color: GOLD }}>
+                J.A.R.V.I.S
+              </p>
+              <p className="font-mono text-[10px] text-gray-500 mt-1">
+                initializing<span className="cursor-blink">_</span>
+              </p>
+            </div>
+            <div className="w-40 h-px bg-[#1e1e1e] overflow-hidden">
+              <div className="boot-bar h-full" style={{ background: `linear-gradient(90deg, ${RED}, ${GOLD}, #22d3ee)` }} />
+            </div>
+            <p className="font-mono text-[8px] text-gray-700 tracking-[0.2em]">ARC REACTOR ONLINE</p>
+          </div>
+        )}
+
+        {/* Header — Jarvis */}
+        <div
+          className="flex items-center justify-between px-4 py-3 flex-shrink-0 rounded-t-2xl"
+          style={{
+            borderBottom: `1px solid ${GOLD}22`,
+            background: `linear-gradient(135deg, ${RED}22 0%, ${GOLD}10 100%)`,
+          }}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#06b6d4]/15 border border-[#06b6d4]/30 flex items-center justify-center">
-              <FaRobot size={14} className="text-[#06b6d4]" />
+            {/* Iron Man helmet avatar */}
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center relative"
+              style={{
+                background: 'radial-gradient(circle at 50% 40%, #15323d 0%, #0d0d0f 100%)',
+                border: `1px solid ${GOLD}45`,
+                boxShadow: `0 0 10px ${GOLD}35`,
+              }}
+            >
+              <IronHelmet size={26} />
             </div>
             <div>
-              <p className="text-white text-sm font-semibold">Alif&apos;s Assistant</p>
-              <p className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
-                Online
+              <p className="text-sm font-bold tracking-wide" style={{ color: GOLD }}>
+                J.A.R.V.I.S
+              </p>
+              <p className="text-[10px] font-mono flex items-center gap-1.5" style={{ color: '#22d3ee' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22d3ee] animate-pulse inline-block"
+                  style={{ boxShadow: '0 0 6px #22d3ee' }} />
+                Online · Alif&apos;s AI
               </p>
             </div>
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="text-gray-600 hover:text-gray-300 transition-colors p-1"
+            className="text-gray-500 hover:text-gray-200 transition-colors p-1"
           >
             <IoClose size={18} />
           </button>
@@ -112,34 +161,48 @@ export default function ChatWidget() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 min-h-0">
           {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {msg.role === 'assistant' && (
+                <div
+                  className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
+                  style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}40` }}
+                >
+                  <IronHelmet size={15} />
+                </div>
+              )}
               <div
-                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                className="max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed"
+                style={
                   msg.role === 'user'
-                    ? 'bg-[#06b6d4] text-black font-medium rounded-br-sm'
-                    : 'bg-[#1e1e1e] text-gray-300 rounded-bl-sm'
-                }`}
+                    ? { background: `linear-gradient(135deg, ${GOLD}, #0891b2)`, color: '#03242b', fontWeight: 500, borderBottomRightRadius: 4 }
+                    : { background: '#1e1e1e', color: '#d1d5db', border: `1px solid ${GOLD}18`, borderBottomLeftRadius: 4 }
+                }
               >
                 {msg.content}
               </div>
             </div>
           ))}
           {loading && (
-            <div className="flex justify-start">
-              <div className="bg-[#1e1e1e] rounded-2xl rounded-bl-sm">
+            <div className="flex gap-2 justify-start">
+              <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
+                style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}40` }}>
+                <IronHelmet size={15} />
+              </div>
+              <div className="rounded-2xl" style={{ background: '#1e1e1e', border: `1px solid ${GOLD}18` }}>
                 <TypingIndicator />
               </div>
             </div>
           )}
 
-          {/* Suggestions (only at start) */}
+          {/* Suggestions */}
           {messages.length === 1 && !loading && (
             <div className="flex flex-wrap gap-2 pt-1">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="text-[11px] font-mono text-[#06b6d4] border border-[#06b6d4]/25 bg-[#06b6d4]/5 rounded-full px-3 py-1 hover:bg-[#06b6d4]/15 transition-colors text-left"
+                  className="text-[11px] font-mono rounded-full px-3 py-1 transition-colors text-left"
+                  style={{ color: GOLD, border: `1px solid ${GOLD}30`, background: `${GOLD}0a` }}
                 >
                   {s}
                 </button>
@@ -150,45 +213,51 @@ export default function ChatWidget() {
         </div>
 
         {/* Input */}
-        <div className="px-3 py-3 border-t border-[#1e1e1e] flex-shrink-0">
+        <div className="px-3 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${GOLD}18` }}>
           <form
             onSubmit={(e) => { e.preventDefault(); send(input) }}
-            className="flex items-center gap-2 bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-3 py-2 focus-within:border-[#06b6d4]/40 transition-colors"
+            className="flex items-center gap-2 bg-[#0f0f0f] rounded-xl px-3 py-2 transition-colors"
+            style={{ border: `1px solid ${GOLD}25` }}
           >
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about Alif..."
+              placeholder="Ask Jarvis about Alif..."
               className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 focus:outline-none font-mono"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="text-[#06b6d4] hover:text-[#22d3ee] disabled:text-gray-700 transition-colors flex-shrink-0"
+              className="transition-colors flex-shrink-0 disabled:opacity-40"
+              style={{ color: GOLD }}
             >
               <IoSend size={16} />
             </button>
           </form>
           <p className="text-[9px] text-gray-700 font-mono text-center mt-1.5">
-            Powered by Groq · Llama 3
+            J.A.R.V.I.S · powered by Groq
           </p>
         </div>
       </div>
 
-      {/* Toggle button */}
+      {/* Toggle button — Iron Man helmet */}
       <button
-        onClick={() => setOpen((v) => !v)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
+        onClick={toggle}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+        style={
           open
-            ? 'bg-[#1e1e1e] border border-[#2a2a2a] text-gray-400'
-            : 'bg-[#06b6d4] text-black hover:bg-[#22d3ee] hover:scale-110'
-        }`}
-        style={!open ? { boxShadow: '0 0 30px #06b6d440' } : {}}
-        aria-label="Chat with AI assistant"
+            ? { background: '#161616', border: `1px solid ${GOLD}40` }
+            : {
+                background: 'radial-gradient(circle at 50% 40%, #15323d 0%, #0d0d0f 100%)',
+                boxShadow: `0 0 22px ${GOLD}55, 0 0 6px ${GOLD}40`,
+                border: `1px solid ${GOLD}55`,
+              }
+        }
+        aria-label="Chat with Jarvis"
       >
-        {open ? <IoClose size={22} /> : <FaRobot size={22} />}
+        {open ? <IoClose size={22} style={{ color: GOLD }} /> : <IronHelmet size={34} />}
       </button>
     </>
   )
