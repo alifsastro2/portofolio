@@ -36,20 +36,73 @@ export default function ChatWidget() {
     {
       role: 'assistant',
       content:
-        "Good day. I am Jarvis, Mr. Zidane's personal AI assistant. How may I assist you — perhaps his skills, projects, or availability?",
+        "Good day. I am Anne, Mr. Zidane's personal AI assistant. How may I assist you — perhaps his skills, projects, or availability?",
     },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [booting, setBooting] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
+  const [glowOnce, setGlowOnce] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const greetingAudioRef = useRef<HTMLAudioElement | null>(null)
+  const bootAudioRef = useRef<HTMLAudioElement | null>(null)
+  const bootTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // siapkan audio (sapaan ElevenLabs + boot sound)
+  useEffect(() => {
+    const g = new Audio('/anne-greeting.mp3'); g.preload = 'auto'
+    greetingAudioRef.current = g
+    const b = new Audio('/boot-sound.mp3'); b.preload = 'auto'
+    bootAudioRef.current = b
+  }, [])
+
+  const stopBootSound = () => {
+    const b = bootAudioRef.current
+    if (b) { b.pause(); b.currentTime = 0 }
+  }
+
+  const stopVoice = () => {
+    const a = greetingAudioRef.current
+    if (a) { a.pause(); a.currentTime = 0 }
+    setSpeaking(false)
+    setGlowOnce(false)
+  }
 
   const toggle = () => {
-    if (open) { setOpen(false); return }
+    if (open) {
+      // tutup: batalkan boot yang tertunda + hentikan semua suara
+      if (bootTimerRef.current) clearTimeout(bootTimerRef.current)
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current)
+      stopBootSound()
+      stopVoice()
+      setBooting(false)
+      setOpen(false)
+      return
+    }
     setOpen(true)
     setBooting(true)
-    setTimeout(() => setBooting(false), 1500)
+    // boot sound selama "initializing"
+    const b = bootAudioRef.current
+    if (b) { b.currentTime = 0; b.play().catch(() => {}) }
+    const playGreeting = messages.length === 1
+    bootTimerRef.current = setTimeout(() => {
+      setBooting(false)
+      stopBootSound()
+      if (playGreeting) {
+        const a = greetingAudioRef.current
+        if (a) {
+          a.currentTime = 0
+          a.onended = () => { setSpeaking(false); setGlowOnce(false) }
+          setSpeaking(true)
+          setGlowOnce(true) // glow sekali, lalu mati
+          glowTimerRef.current = setTimeout(() => setGlowOnce(false), 1200)
+          a.play().catch(() => { setSpeaking(false); setGlowOnce(false) })
+        }
+      }
+    }, 1500)
   }
 
   useEffect(() => {
@@ -95,7 +148,7 @@ export default function ChatWidget() {
     <>
       {/* Chat panel */}
       <div
-        className={`fixed bottom-24 right-6 z-50 w-[340px] sm:w-[380px] flex flex-col bg-[#161616] rounded-2xl shadow-2xl transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-[380px] flex flex-col bg-[#161616] rounded-2xl shadow-2xl transition-all duration-300 origin-bottom-right ${
           open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-90 pointer-events-none'
         }`}
         style={{ maxHeight: '520px', border: `1px solid ${GOLD}30`, boxShadow: `0 0 40px ${RED}25` }}
@@ -106,7 +159,7 @@ export default function ChatWidget() {
             <ArcReactor size={64} />
             <div className="text-center">
               <p className="font-mono font-bold text-sm tracking-[0.3em]" style={{ color: GOLD }}>
-                J.A.R.V.I.S
+                ANNE
               </p>
               <p className="font-mono text-[10px] text-gray-500 mt-1">
                 initializing<span className="cursor-blink">_</span>
@@ -119,7 +172,7 @@ export default function ChatWidget() {
           </div>
         )}
 
-        {/* Header — Jarvis */}
+        {/* Header — Anne */}
         <div
           className="flex items-center justify-between px-4 py-3 flex-shrink-0 rounded-t-2xl"
           style={{
@@ -141,7 +194,7 @@ export default function ChatWidget() {
             </div>
             <div>
               <p className="text-sm font-bold tracking-wide" style={{ color: GOLD }}>
-                J.A.R.V.I.S
+                ANNE
               </p>
               <p className="text-[10px] font-mono flex items-center gap-1.5" style={{ color: '#22d3ee' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#22d3ee] animate-pulse inline-block"
@@ -160,28 +213,44 @@ export default function ChatWidget() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 min-h-0">
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {msg.role === 'assistant' && (
+          {!booting && messages.map((msg, i) => {
+            const isGreeting = i === 0
+            const greetGlow = isGreeting && glowOnce   // pulse sekali
+            const greetSpeak = isGreeting && speaking  // sound bars + border, selama suara
+            return (
+              <div key={i} className={`overlay-in flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.role === 'assistant' && (
+                  <div
+                    className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 ${greetGlow ? 'speak-glow' : ''}`}
+                    style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}40` }}
+                  >
+                    <IronHelmet size={15} />
+                  </div>
+                )}
                 <div
-                  className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}40` }}
+                  className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${greetGlow ? 'speak-glow' : ''}`}
+                  style={
+                    msg.role === 'user'
+                      ? { background: `linear-gradient(135deg, ${GOLD}, #0891b2)`, color: '#03242b', fontWeight: 500, borderBottomRightRadius: 4 }
+                      : { background: '#1e1e1e', color: '#d1d5db', border: `1px solid ${greetSpeak ? GOLD + '55' : GOLD + '18'}`, borderBottomLeftRadius: 4 }
+                  }
                 >
-                  <IronHelmet size={15} />
+                  {msg.content}
+                  {greetSpeak && (
+                    <span className="flex items-end gap-1 mt-2.5" style={{ height: 16 }}>
+                      {[0, 1, 2, 3, 4].map((b) => (
+                        <span
+                          key={b}
+                          className="sound-bar block w-1 rounded-full"
+                          style={{ background: GOLD, animationDelay: `${b * 0.11}s`, boxShadow: `0 0 4px ${GOLD}` }}
+                        />
+                      ))}
+                    </span>
+                  )}
                 </div>
-              )}
-              <div
-                className="max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed"
-                style={
-                  msg.role === 'user'
-                    ? { background: `linear-gradient(135deg, ${GOLD}, #0891b2)`, color: '#03242b', fontWeight: 500, borderBottomRightRadius: 4 }
-                    : { background: '#1e1e1e', color: '#d1d5db', border: `1px solid ${GOLD}18`, borderBottomLeftRadius: 4 }
-                }
-              >
-                {msg.content}
               </div>
-            </div>
-          ))}
+            )
+          })}
           {loading && (
             <div className="flex gap-2 justify-start">
               <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
@@ -195,8 +264,8 @@ export default function ChatWidget() {
           )}
 
           {/* Suggestions */}
-          {messages.length === 1 && !loading && (
-            <div className="flex flex-wrap gap-2 pt-1">
+          {!booting && messages.length === 1 && !loading && (
+            <div className="overlay-in flex flex-wrap gap-2 pt-1">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
@@ -223,7 +292,7 @@ export default function ChatWidget() {
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Jarvis about Alif..."
+              placeholder="Ask Anne about Alif..."
               className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 focus:outline-none font-mono"
               disabled={loading}
             />
@@ -237,7 +306,7 @@ export default function ChatWidget() {
             </button>
           </form>
           <p className="text-[9px] text-gray-700 font-mono text-center mt-1.5">
-            J.A.R.V.I.S · powered by Groq
+            Anne · powered by Groq
           </p>
         </div>
       </div>
@@ -255,7 +324,7 @@ export default function ChatWidget() {
                 border: `1px solid ${GOLD}55`,
               }
         }
-        aria-label="Chat with Jarvis"
+        aria-label="Chat with Anne"
       >
         {open ? <IoClose size={22} style={{ color: GOLD }} /> : <IronHelmet size={34} />}
       </button>

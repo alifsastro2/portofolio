@@ -1,10 +1,12 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { animate, stagger } from 'animejs'
 import Image from 'next/image'
 import DevRunner from './DevRunner'
 
 export default function Hero() {
+  const [statsOpen, setStatsOpen] = useState(false)
+
   useEffect(() => {
     const runAnimations = () => {
       animate('.hero-item', {
@@ -122,13 +124,17 @@ export default function Hero() {
 
         {/* ── Right: Photo + Stats ── */}
         <div className="hero-photo opacity-0 order-1 lg:order-2 flex justify-center lg:justify-end">
-          {/* Outer wrapper — extra horizontal space untuk badges */}
-          <div className="group relative flex items-center justify-center px-20">
+          {/* Outer wrapper — hover (desktop) / tap (mobile) untuk munculkan badges */}
+          <div
+            className="group relative flex items-center justify-center px-12 sm:px-20 cursor-pointer"
+            onClick={() => setStatsOpen((v) => !v)}
+          >
 
-            {/* Height badge — muncul di kiri, dekat tubuh */}
-            <div className="absolute left-0 top-[28%] opacity-0 -translate-x-1 pointer-events-none
-                            group-hover:opacity-100 group-hover:-translate-x-0
-                            transition-all duration-400 ease-out delay-75">
+            {/* Height badge — sejajar bahu (kiri) */}
+            <div className={`absolute left-0 top-[24%] pointer-events-none
+                            group-hover:opacity-100 group-hover:translate-x-0
+                            transition-all duration-400 ease-out delay-75
+                            ${statsOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'}`}>
               <div className="flex items-center gap-1.5">
                 <div className="bg-[#0f0f0f] border border-[#06b6d4]/40 rounded-xl px-3 py-2 text-center shadow-lg shadow-[#06b6d4]/5">
                   <div className="text-[#06b6d4] font-bold text-lg leading-none font-mono">170</div>
@@ -139,10 +145,11 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Weight badge — muncul di kanan, dekat tubuh */}
-            <div className="absolute right-0 top-[48%] opacity-0 translate-x-1 pointer-events-none
+            {/* Weight badge — sejajar siku (kanan) */}
+            <div className={`absolute right-0 top-[46%] pointer-events-none
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-400 ease-out delay-150">
+                            transition-all duration-400 ease-out delay-150
+                            ${statsOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-1'}`}>
               <div className="flex items-center gap-1.5">
                 <div className="w-4 h-px bg-[#06b6d4]/40" />
                 <div className="bg-[#0f0f0f] border border-[#06b6d4]/40 rounded-xl px-3 py-2 text-center shadow-lg shadow-[#06b6d4]/5">
@@ -165,10 +172,11 @@ export default function Hero() {
               />
             </div>
 
-            {/* Age badge — muncul dari bawah, z-index di atas foto */}
-            <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 translate-y-3 opacity-0 pointer-events-none z-10
-                            group-hover:opacity-100 group-hover:translate-y-0
-                            transition-all duration-400 ease-out delay-200">
+            {/* Age badge — paling atas, sejajar telinga kanan */}
+            <div className={`absolute top-[7%] right-0 pointer-events-none z-10
+                            group-hover:opacity-100 group-hover:translate-x-0
+                            transition-all duration-400 ease-out delay-200
+                            ${statsOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-1'}`}>
               <div className="bg-[#0f0f0f] border border-[#06b6d4]/30 rounded-full px-4 py-1.5 flex items-center gap-2 whitespace-nowrap shadow-lg">
                 <span className="text-[#06b6d4] font-bold text-sm font-mono">25</span>
                 <span className="text-gray-600 text-[10px] font-mono">yo · Bekasi</span>

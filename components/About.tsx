@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 import Image from 'next/image'
 import type { AboutContent } from '@/lib/supabase/types'
@@ -42,6 +42,7 @@ const defaults = {
 export default function About({ about }: { about: AboutContent | null }) {
   const sectionRef = useRef<HTMLElement>(null)
   const animatedRef = useRef(false)
+  const [swapped, setSwapped] = useState(false)
 
   const bio_1    = about?.bio_1    ?? defaults.bio_1
   const bio_2    = about?.bio_2    ?? defaults.bio_2
@@ -78,27 +79,30 @@ export default function About({ about }: { about: AboutContent | null }) {
         {/* Left: Photo + Hobbies */}
         <div className="space-y-6">
           <div className="about-item opacity-0 flex justify-center lg:justify-start">
-            <div className="group relative w-72 sm:w-80 aspect-[3/4]">
+            <div
+              className="group relative w-72 sm:w-80 aspect-[3/4] cursor-pointer"
+              onClick={() => setSwapped((v) => !v)}
+            >
               <div className="absolute inset-0 rounded-2xl border border-[#06b6d4]/20 bg-[#161616] overflow-hidden">
                 {/* Foto default (lihat samping) */}
                 <Image
                   src="/about-default.png"
                   alt="Alif Ardezir Zidane"
                   fill
-                  className="object-cover transition-opacity duration-500 ease-out group-hover:opacity-0"
+                  className={`object-cover transition-opacity duration-500 ease-out group-hover:opacity-0 ${swapped ? 'opacity-0' : 'opacity-100'}`}
                 />
-                {/* Foto hover (lihat kamera) — crossfade saat mouse di atas */}
+                {/* Foto kedua (lihat kamera) — hover (desktop) / tap (mobile) */}
                 <Image
                   src="/about-hover.png"
                   alt="Alif Ardezir Zidane"
                   fill
-                  className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                  className={`object-cover transition-opacity duration-500 ease-out group-hover:opacity-100 ${swapped ? 'opacity-100' : 'opacity-0'}`}
                 />
                 {/* gradient bawah biar nyatu dengan tema gelap */}
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0f0f0f]/60 to-transparent pointer-events-none" />
                 {/* hint kecil */}
-                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 font-mono text-[9px] text-gray-400/70 opacity-100 group-hover:opacity-0 transition-opacity duration-300 whitespace-nowrap">
-                  ✦ touch me
+                <span className={`absolute bottom-3 left-1/2 -translate-x-1/2 font-mono text-[9px] text-gray-400/70 transition-opacity duration-300 whitespace-nowrap group-hover:opacity-0 ${swapped ? 'opacity-0' : 'opacity-100'}`}>
+                  ✦ tap me
                 </span>
               </div>
               <div className="absolute -bottom-3 -right-3 w-20 h-20 border-b-2 border-r-2 border-[#06b6d4]/40 rounded-br-2xl pointer-events-none" />

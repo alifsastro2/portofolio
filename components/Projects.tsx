@@ -5,7 +5,7 @@ import { projects as staticProjects } from '@/lib/data'
 import type { Project } from '@/lib/supabase/types'
 import { skillIconMap } from '@/lib/icons'
 import { SiGithub } from 'react-icons/si'
-import { FiExternalLink } from 'react-icons/fi'
+import { FiExternalLink, FiChevronDown } from 'react-icons/fi'
 
 const typeColors: Record<string, string> = {
   'Web App':    'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
@@ -17,8 +17,7 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
   const projects = (data && data.length > 0 ? data : staticProjects) as Project[]
   const sectionRef = useRef<HTMLElement>(null)
   const animatedRef = useRef(false)
-  const [active, setActive] = useState<number | null>(null)
-  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -40,16 +39,10 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
     return () => observer.disconnect()
   }, [])
 
-  const preview = active !== null ? projects[active] : null
   const liveProjects = projects.filter((p) => p.live)
 
   return (
-    <section
-      id="projects"
-      ref={sectionRef}
-      className="py-28 px-6"
-      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
-    >
+    <section id="projects" ref={sectionRef} className="py-28 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="project-header opacity-0 mb-12">
@@ -57,53 +50,88 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
           <h2 className="text-3xl lg:text-4xl font-bold text-white">
             Selected <span className="text-[#06b6d4]">Projects</span>
           </h2>
-          <p className="text-gray-600 text-sm font-mono mt-2 hidden lg:block">Hover a project to preview · click to open</p>
+          <p className="text-gray-600 text-sm font-mono mt-2">Hover or tap a project to see details</p>
         </div>
 
-        {/* Interactive list */}
-        <div className="border-b border-[#1e1e1e]" onMouseLeave={() => setActive(null)}>
+        {/* Accordion list */}
+        <div className="border-b border-[#1e1e1e]">
           {projects.map((project, i) => {
-            const href = project.github || project.live || '#'
+            const isOpen = openIndex === i
             return (
-              <a
+              <div
                 key={project.title}
-                href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel="noopener noreferrer"
-                onMouseEnter={() => setActive(i)}
-                className="project-row opacity-0 group flex items-center justify-between gap-4 py-6 border-t border-[#1e1e1e] transition-all duration-300 hover:px-3"
+                className="project-row opacity-0 border-t border-[#1e1e1e]"
+                onMouseEnter={() => setOpenIndex(i)}
+                onMouseLeave={() => setOpenIndex(null)}
               >
-                {/* Left: index + title */}
-                <div className="flex items-baseline gap-4 min-w-0">
-                  <span className="font-mono text-xs text-gray-700 group-hover:text-[#06b6d4] transition-colors flex-shrink-0">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="text-xl lg:text-3xl font-bold text-gray-300 group-hover:text-[#06b6d4] transition-colors truncate">
+                {/* Row header — toggle */}
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="w-full group flex items-center justify-between gap-4 py-6 text-left"
+                >
+                  <div className="flex items-baseline gap-4 min-w-0">
+                    <span className={`font-mono text-xs flex-shrink-0 transition-colors ${isOpen ? 'text-[#06b6d4]' : 'text-gray-700'} group-hover:text-[#06b6d4]`}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <h3 className={`text-xl lg:text-3xl font-bold transition-colors truncate ${isOpen ? 'text-[#06b6d4]' : 'text-gray-300'} group-hover:text-[#06b6d4]`}>
                       {project.title}
                     </h3>
                   </div>
-                </div>
-
-                {/* Right: tags (desktop) + type + arrow */}
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <div className="hidden xl:flex items-center gap-1.5">
-                    {project.tags.slice(0, 3).map((tag) => {
-                      const Icon = skillIconMap[tag]
-                      return (
-                        <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-gray-500 bg-[#161616] border border-[#1e1e1e] rounded">
-                          {Icon && <Icon size={9} />}
-                          {tag}
-                        </span>
-                      )
-                    })}
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                    <span className={`hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded border ${typeColors[project.type ?? ''] ?? 'text-gray-400 bg-gray-400/10 border-gray-400/20'}`}>
+                      {project.type}
+                    </span>
+                    <FiChevronDown
+                      size={20}
+                      className={`transition-all duration-300 ${isOpen ? 'rotate-180 text-[#06b6d4]' : 'text-gray-600'} group-hover:text-[#06b6d4]`}
+                    />
                   </div>
-                  <span className={`hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded border ${typeColors[project.type ?? ''] ?? 'text-gray-400 bg-gray-400/10 border-gray-400/20'}`}>
-                    {project.type}
-                  </span>
-                  <span className="text-gray-600 group-hover:text-[#06b6d4] group-hover:translate-x-1 transition-all text-xl">↗</span>
+                </button>
+
+                {/* Dropdown — deskripsi + tags + links */}
+                <div className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                  <div className="overflow-hidden">
+                    <div className="pb-7 pl-8 pr-2 max-w-2xl">
+                      <p className="text-gray-400 text-sm leading-relaxed">{project.description}</p>
+
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {project.tags.map((tag) => {
+                          const Icon = skillIconMap[tag]
+                          return (
+                            <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-gray-500 bg-[#161616] border border-[#1e1e1e] rounded">
+                              {Icon && <Icon size={9} />}
+                              {tag}
+                            </span>
+                          )
+                        })}
+                      </div>
+
+                      <div className="flex items-center gap-3 mt-5">
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-gray-300 bg-[#161616] border border-[#1e1e1e] rounded-lg hover:border-[#06b6d4]/40 hover:text-[#06b6d4] transition-all"
+                          >
+                            <SiGithub size={13} /> GitHub
+                          </a>
+                        )}
+                        {project.live && (
+                          <a
+                            href={project.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-black bg-[#06b6d4] rounded-lg hover:bg-[#22d3ee] transition-all"
+                          >
+                            <FiExternalLink size={13} /> Live Demo
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </a>
+              </div>
             )
           })}
         </div>
@@ -135,23 +163,6 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
           </div>
         )}
       </div>
-
-      {/* Floating preview (desktop) — deskripsi saja, mengikuti kursor */}
-      {preview && (
-        <div
-          className="hidden lg:block fixed z-50 pointer-events-none"
-          style={{ left: pos.x, top: pos.y, transform: 'translate(24px, -50%)' }}
-        >
-          <div className="w-72 rounded-xl border border-[#06b6d4]/30 bg-[#161616] shadow-2xl shadow-[#06b6d4]/10 p-4"
-            style={{ background: 'radial-gradient(circle at 30% 15%, #06b6d415 0%, #161616 60%)' }}
-          >
-            <p className="text-gray-300 text-sm leading-relaxed">{preview.description}</p>
-            <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[#1e1e1e] text-[10px] font-mono text-[#06b6d4]">
-              <SiGithub size={11} /> View on GitHub →
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
