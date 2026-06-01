@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 import { projects as staticProjects } from '@/lib/data'
 import type { Project } from '@/lib/supabase/types'
@@ -17,27 +17,20 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
   const projects = (data && data.length > 0 ? data : staticProjects) as Project[]
   const sectionRef = useRef<HTMLElement>(null)
   const animatedRef = useRef(false)
+  const [active, setActive] = useState<number | null>(null)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !animatedRef.current) {
           animatedRef.current = true
-          animate('.project-header', {
-            opacity: [0, 1],
-            translateY: [30, 0],
-            duration: 800,
-            easing: 'easeOutExpo',
-          })
-          animate('.project-card', {
-            opacity: [0, 1],
-            translateY: [40, 0],
-            delay: stagger(100, { start: 200 }),
-            duration: 700,
-            easing: 'easeOutExpo',
+          animate('.project-header', { opacity: [0, 1], translateY: [30, 0], duration: 800, easing: 'easeOutExpo' })
+          animate('.project-row', {
+            opacity: [0, 1], translateY: [20, 0],
+            delay: stagger(70, { start: 150 }), duration: 600, easing: 'easeOutExpo',
           })
         }
       },
@@ -47,115 +40,118 @@ export default function Projects({ projects: data }: { projects?: Project[] }) {
     return () => observer.disconnect()
   }, [])
 
+  const preview = active !== null ? projects[active] : null
+  const liveProjects = projects.filter((p) => p.live)
+
   return (
     <section
       id="projects"
       ref={sectionRef}
-      className="py-28 px-6 bg-[#0a0a0a]"
+      className="py-28 px-6"
+      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="project-header opacity-0 mb-14">
-          <p className="font-mono text-[#06b6d4] text-xs tracking-[0.3em] uppercase mb-3">
-            Work
-          </p>
+        <div className="project-header opacity-0 mb-12">
+          <p className="font-mono text-[#06b6d4] text-xs tracking-[0.3em] uppercase mb-3">Work</p>
           <h2 className="text-3xl lg:text-4xl font-bold text-white">
             Selected <span className="text-[#06b6d4]">Projects</span>
           </h2>
+          <p className="text-gray-600 text-sm font-mono mt-2 hidden lg:block">Hover a project to preview · click to open</p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <div
-              key={project.title}
-              className="project-card opacity-0 group relative flex flex-col bg-[#161616] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-[#06b6d4]/30 transition-all duration-300 hover:shadow-[0_0_30px_#06b6d410]"
-            >
-              {/* Image area */}
-              <div className="relative h-44 bg-[#0f0f0f] border-b border-[#1e1e1e] flex items-center justify-center overflow-hidden">
-                {project.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-gray-800">
-                    <div className="w-12 h-12 rounded-xl border border-[#1e1e1e] flex items-center justify-center">
-                      <span className="text-xl">{project.type === 'Mobile App' ? '📱' : '🌐'}</span>
-                    </div>
-                    <span className="font-mono text-xs">[ screenshot coming soon ]</span>
+        {/* Interactive list */}
+        <div className="border-b border-[#1e1e1e]" onMouseLeave={() => setActive(null)}>
+          {projects.map((project, i) => {
+            const href = project.github || project.live || '#'
+            return (
+              <a
+                key={project.title}
+                href={href}
+                target={href.startsWith('http') ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                onMouseEnter={() => setActive(i)}
+                className="project-row opacity-0 group flex items-center justify-between gap-4 py-6 border-t border-[#1e1e1e] transition-all duration-300 hover:px-3"
+              >
+                {/* Left: index + title */}
+                <div className="flex items-baseline gap-4 min-w-0">
+                  <span className="font-mono text-xs text-gray-700 group-hover:text-[#06b6d4] transition-colors flex-shrink-0">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-xl lg:text-3xl font-bold text-gray-300 group-hover:text-[#06b6d4] transition-colors truncate">
+                      {project.title}
+                    </h3>
                   </div>
-                )}
-                {/* Type badge */}
-                <span
-                  className={`absolute top-3 left-3 px-2 py-0.5 text-[10px] font-mono rounded border ${typeColors[project.type ?? ''] ?? 'text-gray-400 bg-gray-400/10 border-gray-400/20'}`}
-                >
-                  {project.type}
-                </span>
-              </div>
-
-              {/* Content */}
-              <div className="flex flex-col flex-1 p-5 gap-4">
-                <div>
-                  <h3 className="text-white font-semibold text-base mb-2 group-hover:text-[#06b6d4] transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
-                    {project.description}
-                  </p>
                 </div>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  {project.tags.map((tag) => {
-                    const Icon = skillIconMap[tag]
-                    return (
-                      <span
-                        key={tag}
-                        className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-gray-500 bg-[#1e1e1e] rounded"
-                      >
-                        {Icon && <Icon size={9} className="text-gray-600 flex-shrink-0" />}
-                        {tag}
-                      </span>
-                    )
-                  })}
+                {/* Right: tags (desktop) + type + arrow */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <div className="hidden xl:flex items-center gap-1.5">
+                    {project.tags.slice(0, 3).map((tag) => {
+                      const Icon = skillIconMap[tag]
+                      return (
+                        <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-gray-500 bg-[#161616] border border-[#1e1e1e] rounded">
+                          {Icon && <Icon size={9} />}
+                          {tag}
+                        </span>
+                      )
+                    })}
+                  </div>
+                  <span className={`hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded border ${typeColors[project.type ?? ''] ?? 'text-gray-400 bg-gray-400/10 border-gray-400/20'}`}>
+                    {project.type}
+                  </span>
+                  <span className="text-gray-600 group-hover:text-[#06b6d4] group-hover:translate-x-1 transition-all text-xl">↗</span>
                 </div>
-
-                {/* Links */}
-                <div className="flex items-center gap-4 pt-2 border-t border-[#1e1e1e]">
-                  {project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-mono text-gray-500 hover:text-[#06b6d4] transition-colors"
-                    >
-                      <SiGithub size={13} />
-                      GitHub
-                    </a>
-                  )}
-                  {project.live && (
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-mono text-gray-500 hover:text-[#06b6d4] transition-colors"
-                    >
-                      <FiExternalLink size={13} />
-                      Live Demo
-                    </a>
-                  )}
-                  {!project.github && !project.live && (
-                    <span className="text-xs font-mono text-gray-700">Private</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+              </a>
+            )
+          })}
         </div>
+
+        {/* Live websites */}
+        {liveProjects.length > 0 && (
+          <div className="project-header opacity-0 mt-10 flex flex-col sm:flex-row sm:items-center gap-4">
+            <span className="font-mono text-xs text-gray-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live Websites
+            </span>
+            <div className="flex flex-wrap gap-3">
+              {liveProjects.map((p) => (
+                <a
+                  key={p.title}
+                  href={p.live as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 px-4 py-2 bg-[#161616] border border-[#1e1e1e] rounded-lg hover:border-[#06b6d4]/40 hover:bg-[#06b6d4]/5 transition-all"
+                >
+                  <FiExternalLink size={13} className="text-[#06b6d4]" />
+                  <span className="text-sm text-gray-300 group-hover:text-[#06b6d4] transition-colors">{p.title}</span>
+                  <span className="text-[10px] font-mono text-gray-600 hidden sm:inline">
+                    {(p.live as string).replace(/^https?:\/\//, '')}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Floating preview (desktop) — deskripsi saja, mengikuti kursor */}
+      {preview && (
+        <div
+          className="hidden lg:block fixed z-50 pointer-events-none"
+          style={{ left: pos.x, top: pos.y, transform: 'translate(24px, -50%)' }}
+        >
+          <div className="w-72 rounded-xl border border-[#06b6d4]/30 bg-[#161616] shadow-2xl shadow-[#06b6d4]/10 p-4"
+            style={{ background: 'radial-gradient(circle at 30% 15%, #06b6d415 0%, #161616 60%)' }}
+          >
+            <p className="text-gray-300 text-sm leading-relaxed">{preview.description}</p>
+            <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[#1e1e1e] text-[10px] font-mono text-[#06b6d4]">
+              <SiGithub size={11} /> View on GitHub →
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

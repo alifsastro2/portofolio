@@ -13,7 +13,7 @@ const brandColors: Record<string, string> = {
 }
 
 const defaultLinks = [
-  { id: '1', label: 'Email',    value: 'alif@cybergl.co.id',         href: 'mailto:alif@cybergl.co.id',                                         icon: null, display_order: 0 },
+  { id: '1', label: 'Email',    value: 'alif.sastro2@gmail.com',     href: 'mailto:alif.sastro2@gmail.com',                                         icon: null, display_order: 0 },
   { id: '2', label: 'LinkedIn', value: 'alif-ardezir-zidane',        href: 'https://www.linkedin.com/in/alif-ardezir-zidane-5a1b062b8',          icon: null, display_order: 1 },
   { id: '3', label: 'GitHub',   value: 'alifsastro2',                href: 'https://github.com/alifsastro2',                                     icon: null, display_order: 2 },
   { id: '4', label: 'WhatsApp', value: '0813-8761-4254',             href: 'https://wa.me/6281387614254',                                        icon: null, display_order: 3 },

@@ -1,49 +1,38 @@
 'use client'
 import { useEffect } from 'react'
 import { animate, stagger } from 'animejs'
-
-const floatingTags = ['Next.js', 'Flutter', 'TypeScript', 'Supabase', 'Claude AI']
+import Image from 'next/image'
+import DevRunner from './DevRunner'
 
 export default function Hero() {
   useEffect(() => {
-    animate('.hero-item', {
-      opacity: [0, 1],
-      translateY: [30, 0],
-      delay: stagger(140, { start: 200 }),
-      duration: 900,
-      easing: 'easeOutExpo',
-    })
+    const runAnimations = () => {
+      animate('.hero-item', {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        delay: stagger(120, { start: 100 }),
+        duration: 800,
+        easing: 'easeOutExpo',
+      })
+      animate('.hero-photo', {
+        opacity: [0, 1],
+        translateX: [40, 0],
+        duration: 1000,
+        delay: 200,
+        easing: 'easeOutExpo',
+      })
+    }
 
-    animate('.hero-orb', {
-      scale: [0.7, 1],
-      opacity: [0, 1],
-      duration: 1400,
-      easing: 'easeOutElastic(1, 0.6)',
-    })
+    // Tunggu loading screen selesai
+    window.addEventListener('portfolio:loaded', runAnimations, { once: true })
 
-    animate('.hero-ring-1', {
-      opacity: [0, 1],
-      scale: [0.5, 1],
-      duration: 1200,
-      delay: 300,
-      easing: 'easeOutExpo',
-    })
+    // Fallback: kalau event tidak firing (misal refresh cepat / dev mode)
+    const fallback = setTimeout(runAnimations, 3500)
 
-    animate('.hero-ring-2', {
-      opacity: [0, 1],
-      scale: [0.5, 1],
-      duration: 1200,
-      delay: 500,
-      easing: 'easeOutExpo',
-    })
-
-    animate('.hero-tag', {
-      opacity: [0, 1],
-      translateX: [-10, 0],
-      delay: stagger(100, { start: 800 }),
-      duration: 600,
-      easing: 'easeOutExpo',
-    })
+    return () => {
+      window.removeEventListener('portfolio:loaded', runAnimations)
+      clearTimeout(fallback)
+    }
   }, [])
 
   return (
@@ -51,13 +40,12 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden bg-[#0f0f0f]"
     >
-      {/* Ambient gradients */}
+      {/* Ambient background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 right-0 w-[60%] h-[70%] bg-[radial-gradient(ellipse_at_top_right,_#06b6d418_0%,_transparent_65%)]" />
         <div className="absolute bottom-0 left-0 w-[40%] h-[50%] bg-[radial-gradient(ellipse_at_bottom_left,_#06b6d40a_0%,_transparent_65%)]" />
-        {/* Grid lines */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.025]"
           style={{
             backgroundImage:
               'linear-gradient(#06b6d4 1px, transparent 1px), linear-gradient(90deg, #06b6d4 1px, transparent 1px)',
@@ -66,9 +54,10 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-24 pt-28">
-        {/* ── Left: Text content ── */}
-        <div className="space-y-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start pt-20 pb-16">
+
+        {/* ── Left: Text ── */}
+        <div className="space-y-6 order-2 lg:order-1">
           <p className="hero-item opacity-0 font-mono text-[#06b6d4] text-xs tracking-[0.4em] uppercase">
             Hi, I&apos;m
           </p>
@@ -106,88 +95,92 @@ export default function Hero() {
           </div>
 
           <div className="hero-item opacity-0 flex items-center gap-5 pt-2">
-            <a
-              href="https://github.com/alifsastro2"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-xs text-gray-600 hover:text-[#06b6d4] transition-colors"
-            >
-              GitHub
-            </a>
-            <span className="text-gray-800">·</span>
-            <a
-              href="https://www.linkedin.com/in/alif-ardezir-zidane-5a1b062b8"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-xs text-gray-600 hover:text-[#06b6d4] transition-colors"
-            >
-              LinkedIn
-            </a>
-            <span className="text-gray-800">·</span>
-            <a
-              href="mailto:alif@cybergl.co.id"
-              className="font-mono text-xs text-gray-600 hover:text-[#06b6d4] transition-colors"
-            >
-              Email
-            </a>
+            {[
+              { label: 'GitHub', href: 'https://github.com/alifsastro2' },
+              { label: 'LinkedIn', href: 'https://www.linkedin.com/in/alif-ardezir-zidane-5a1b062b8' },
+              { label: 'Email', href: 'mailto:alif.sastro2@gmail.com' },
+            ].map((link, i) => (
+              <span key={link.label} className="flex items-center gap-5">
+                {i > 0 && <span className="text-gray-800">·</span>}
+                <a
+                  href={link.href}
+                  target={link.href.startsWith('mailto') ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs text-gray-600 hover:text-[#06b6d4] transition-colors"
+                >
+                  {link.label}
+                </a>
+              </span>
+            ))}
+          </div>
+
+          {/* ── Dev Runner Mini Game ── */}
+          <div className="hero-item opacity-0 pt-4">
+            <DevRunner />
           </div>
         </div>
 
-        {/* ── Right: 3D Orbital Visual ── */}
-        <div className="relative flex items-center justify-center h-[380px] lg:h-[520px]">
-          {/* Outer spinning ring */}
-          <div className="hero-ring-2 opacity-0 absolute w-[340px] h-[340px] lg:w-[440px] lg:h-[440px] rounded-full border border-dashed border-[#06b6d4]/10 spin-slow" />
+        {/* ── Right: Photo + Stats ── */}
+        <div className="hero-photo opacity-0 order-1 lg:order-2 flex justify-center lg:justify-end">
+          {/* Outer wrapper — extra horizontal space untuk badges */}
+          <div className="group relative flex items-center justify-center px-20">
 
-          {/* Middle ring with dots */}
-          <div className="hero-ring-1 opacity-0 absolute w-[260px] h-[260px] lg:w-[340px] lg:h-[340px] rounded-full border border-[#06b6d4]/20 spin-reverse">
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#06b6d4]" />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#06b6d4]/40" />
-          </div>
+            {/* Height badge — muncul di kiri, dekat tubuh */}
+            <div className="absolute left-0 top-[28%] opacity-0 -translate-x-1 pointer-events-none
+                            group-hover:opacity-100 group-hover:-translate-x-0
+                            transition-all duration-400 ease-out delay-75">
+              <div className="flex items-center gap-1.5">
+                <div className="bg-[#0f0f0f] border border-[#06b6d4]/40 rounded-xl px-3 py-2 text-center shadow-lg shadow-[#06b6d4]/5">
+                  <div className="text-[#06b6d4] font-bold text-lg leading-none font-mono">170</div>
+                  <div className="text-gray-500 text-[9px] font-mono mt-0.5">cm</div>
+                  <div className="text-gray-700 text-[8px] font-mono tracking-wider uppercase">Height</div>
+                </div>
+                <div className="w-4 h-px bg-[#06b6d4]/40" />
+              </div>
+            </div>
 
-          {/* Center orb */}
-          <div className="hero-orb opacity-0 relative z-10 w-44 h-44 lg:w-52 lg:h-52 rounded-full glow-pulse flex items-center justify-center"
-            style={{
-              background: 'radial-gradient(circle at 35% 35%, #06b6d435 0%, #06b6d415 40%, #06b6d408 70%, transparent 100%)',
-              border: '1px solid rgba(6,182,212,0.25)',
-            }}
-          >
-            <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full"
-              style={{
-                background: 'radial-gradient(circle at 40% 40%, #06b6d425 0%, transparent 70%)',
-                border: '1px solid rgba(6,182,212,0.15)',
-              }}
-            />
-          </div>
+            {/* Weight badge — muncul di kanan, dekat tubuh */}
+            <div className="absolute right-0 top-[48%] opacity-0 translate-x-1 pointer-events-none
+                            group-hover:opacity-100 group-hover:translate-x-0
+                            transition-all duration-400 ease-out delay-150">
+              <div className="flex items-center gap-1.5">
+                <div className="w-4 h-px bg-[#06b6d4]/40" />
+                <div className="bg-[#0f0f0f] border border-[#06b6d4]/40 rounded-xl px-3 py-2 text-center shadow-lg shadow-[#06b6d4]/5">
+                  <div className="text-[#06b6d4] font-bold text-lg leading-none font-mono">80</div>
+                  <div className="text-gray-500 text-[9px] font-mono mt-0.5">kg</div>
+                  <div className="text-gray-700 text-[8px] font-mono tracking-wider uppercase">Weight</div>
+                </div>
+              </div>
+            </div>
 
-          {/* Floating tech tags */}
-          <div className="hero-tag opacity-0 absolute top-8 right-8 lg:right-12 bg-[#161616] border border-[#06b6d4]/25 rounded-lg px-3 py-1.5 text-xs text-[#06b6d4] font-mono float-1 shadow-lg">
-            Next.js
-          </div>
-          <div className="hero-tag opacity-0 absolute bottom-16 right-4 lg:right-8 bg-[#161616] border border-[#06b6d4]/25 rounded-lg px-3 py-1.5 text-xs text-[#06b6d4] font-mono float-2 shadow-lg">
-            Flutter
-          </div>
-          <div className="hero-tag opacity-0 absolute top-1/2 -translate-y-1/2 left-0 lg:-left-4 bg-[#161616] border border-[#06b6d4]/25 rounded-lg px-3 py-1.5 text-xs text-[#06b6d4] font-mono float-3 shadow-lg">
-            TypeScript
-          </div>
-          <div className="hero-tag opacity-0 absolute bottom-8 left-10 bg-[#161616] border border-[#06b6d4]/25 rounded-lg px-3 py-1.5 text-xs text-[#06b6d4] font-mono float-1 shadow-lg">
-            Supabase
-          </div>
-          <div className="hero-tag opacity-0 absolute top-10 left-6 bg-[#161616] border border-[#06b6d4]/25 rounded-lg px-3 py-1.5 text-xs text-[#06b6d4] font-mono float-2 shadow-lg">
-            Claude AI
-          </div>
+            {/* Photo */}
+            <div className="w-[200px] sm:w-[240px] lg:w-[280px] transition-transform duration-500 ease-out group-hover:scale-105">
+              <Image
+                src="/photo.png"
+                alt="Alif Ardezir Zidane"
+                width={280}
+                height={480}
+                className="w-full h-auto"
+                priority
+              />
+            </div>
 
-          {/* Decorative shapes */}
-          <div className="absolute top-6 left-1/3 w-5 h-5 border border-[#06b6d4]/20 rounded rotate-45 float-2" />
-          <div className="absolute bottom-10 right-1/3 w-3 h-3 bg-[#06b6d4]/15 rounded-full float-1" />
-          <div className="absolute top-1/3 right-2 w-4 h-4 border border-[#06b6d4]/15 float-3" />
+            {/* Age badge — muncul dari bawah, z-index di atas foto */}
+            <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 translate-y-3 opacity-0 pointer-events-none z-10
+                            group-hover:opacity-100 group-hover:translate-y-0
+                            transition-all duration-400 ease-out delay-200">
+              <div className="bg-[#0f0f0f] border border-[#06b6d4]/30 rounded-full px-4 py-1.5 flex items-center gap-2 whitespace-nowrap shadow-lg">
+                <span className="text-[#06b6d4] font-bold text-sm font-mono">25</span>
+                <span className="text-gray-600 text-[10px] font-mono">yo · Bekasi</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <span className="font-mono text-[10px] tracking-[0.3em] text-gray-700 uppercase">
-          Scroll
-        </span>
+        <span className="font-mono text-[10px] tracking-[0.3em] text-gray-700 uppercase">Scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-[#06b6d4] to-transparent" />
       </div>
     </section>

@@ -72,6 +72,33 @@ body {
   50% { opacity: 0; }
 }
 
+@keyframes badge-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.overlay-in { animation: overlay-in 220ms ease-out; }
+
+/* Horizontal carousel scrollbar (Certificates) — samakan dengan scrollbar halaman */
+.cert-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.cert-scroll::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+.cert-scroll::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 2px;
+}
+.cert-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #06b6d4 #0f0f0f;
+}
+
 .float-1 { animation: float-up-down 4s ease-in-out infinite; }
 .float-2 { animation: float-up-down-reverse 5s ease-in-out infinite; }
 .float-3 { animation: float-up-down 6.5s ease-in-out infinite 1s; }

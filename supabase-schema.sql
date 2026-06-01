@@ -3,6 +3,33 @@
 -- Jalankan di Supabase SQL Editor
 -- =============================================
 
+-- =============================================
+-- Game Leaderboard (Dev Runner)
+-- =============================================
+create table if not exists game_scores (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  score int not null,
+  created_at timestamptz default now()
+);
+
+alter table game_scores enable row level security;
+
+-- Siapa pun boleh baca leaderboard
+create policy "public read scores" on game_scores
+  for select using (true);
+
+-- Siapa pun boleh submit skor (dengan validasi dasar anti-spam)
+create policy "public insert scores" on game_scores
+  for insert with check (
+    char_length(name) between 1 and 20
+    and score >= 0
+    and score < 1000000
+  );
+
+-- Index untuk query top scores
+create index if not exists idx_game_scores_score on game_scores (score desc);
+
 -- Projects
 create table if not exists projects (
   id uuid default gen_random_uuid() primary key,
@@ -98,9 +125,9 @@ create policy "Auth manage contact" on contact_links for all using (auth.role() 
 insert into projects (title, description, tags, type, github, live, display_order) values
 ('POS Cashier', 'Web-based point-of-sale system with Midtrans payment integration, inventory management, and real-time sales reporting.', array['Next.js','TypeScript','Prisma','PostgreSQL','Midtrans'], 'Web App', 'https://github.com/alifsastro2/pos-cashier', null, 0),
 ('Digital bNb Invitation', 'SaaS digital wedding invitation platform with multi-client admin panel, Xendit payment gateway, and production deployment.', array['Next.js','TypeScript','Supabase','Xendit','GSAP'], 'SaaS', null, 'https://invite.digitalbnb.my.id', 1),
-('TSAS — Water Therapy App', 'Multi-role Android app for water therapy management with automated revenue sharing and dynamic PDF reports.', array['Flutter','Dart','Supabase'], 'Mobile App', 'https://github.com/alifsastro2/tsas', null, 2),
-('Warung Gemoy', 'Home catering Android app with real-time order tracking, AI assistant, Google Maps delivery, and Firebase FCM.', array['Flutter','Dart','Firebase','Google Maps SDK','Claude AI'], 'Mobile App', 'https://github.com/alifsastro2/warung-gemoy', null, 3),
-('CACS Facilities Management', 'Dynamic company profile website with custom PHP CMS and Google Analytics for Indonesia & Malaysia operations.', array['PHP','Bootstrap','Google Analytics API'], 'Web App', 'https://github.com/alifsastro2/cacsfm-website', 'https://cacsfm.id', 4);
+('Water Therapy Management App', 'Multi-role Android app for water therapy management with automated revenue sharing and dynamic PDF reports.', array['Flutter','Dart','Supabase'], 'Mobile App', 'https://github.com/alifsastro2/tsas', null, 2),
+('Home Catering App', 'Home catering Android app with real-time order tracking, AI assistant, Google Maps delivery, and Firebase FCM.', array['Flutter','Dart','Firebase','Google Maps SDK','Claude AI'], 'Mobile App', 'https://github.com/alifsastro2/warung-gemoy', null, 3),
+('Company Profile Website', 'Dynamic company profile website with custom PHP CMS and Google Analytics for a facilities company operating in Indonesia & Malaysia.', array['PHP','Bootstrap','Google Analytics API'], 'Web App', 'https://github.com/alifsastro2/cacsfm-website', 'https://cacsfm.id', 4);
 
 -- Skill Categories & Skills
 insert into skill_categories (name, display_order) values

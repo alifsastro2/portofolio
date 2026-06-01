@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { animate, stagger } from 'animejs'
 import { skillCategories as staticSkillCategories } from '@/lib/data'
 import type { SkillCategoryWithItems } from '@/lib/supabase/queries'
-import { skillIconMap, categoryIconMap } from '@/lib/icons'
+import { skillIconMap, categoryIconMap, skillLogoMap } from '@/lib/icons'
 
 export default function Skills({ skillCategories: data }: { skillCategories?: SkillCategoryWithItems[] }) {
   const skillCategories = (data && data.length > 0) ? data : staticSkillCategories
@@ -40,7 +40,7 @@ export default function Skills({ skillCategories: data }: { skillCategories?: Sk
   }, [])
 
   return (
-    <section id="skills" ref={sectionRef} className="py-28 px-6">
+    <section id="skills" ref={sectionRef} className="py-28 px-6 bg-[#0a0a0a]">
       <div className="max-w-7xl mx-auto">
         <div className="skills-header opacity-0 mb-14">
           <p className="font-mono text-[#06b6d4] text-xs tracking-[0.3em] uppercase mb-3">
@@ -75,17 +75,21 @@ export default function Skills({ skillCategories: data }: { skillCategories?: Sk
                 <div className="flex flex-wrap gap-2">
                   {cat.items.map((item) => {
                     const Icon = skillIconMap[item]
+                    const logo = skillLogoMap[item]
                     return (
                       <span
                         key={item}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono text-gray-400 bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg hover:border-[#06b6d4]/30 hover:text-[#06b6d4] transition-all duration-200 cursor-default group"
                       >
-                        {Icon && (
+                        {logo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={logo} alt={item} className="w-3 h-3 object-contain flex-shrink-0" />
+                        ) : Icon ? (
                           <Icon
                             size={12}
                             className="text-gray-600 group-hover:text-[#06b6d4] transition-colors flex-shrink-0"
                           />
-                        )}
+                        ) : null}
                         {item}
                       </span>
                     )

@@ -7,10 +7,13 @@ import {
   SiGooglemaps, SiGoogleanalytics,
   SiOpenai, SiN8N, SiXendit,
   SiWhatsapp, SiGmail,
+  SiCanva, SiSuno, SiObsstudio, SiRobloxstudio,
+  SiTrello, SiGoogle, SiLooker, SiElevenlabs,
 } from 'react-icons/si'
 import {
   FaEnvelope, FaMobileAlt, FaCode, FaDatabase,
   FaCreditCard, FaBrain, FaPlug, FaTools, FaLinkedin,
+  FaPalette, FaMicrosoft, FaVideo,
 } from 'react-icons/fa'
 import { VscVscode, VscTerminal } from 'react-icons/vsc'
 
@@ -53,7 +56,21 @@ export const skillIconMap: Record<string, IconType> = {
   'TestRail':       FaCode,
   'VS Code':        VscVscode,
   'Android Studio': SiAndroidstudio,
+  // Creative & Productivity (non-coding)
+  'Canva':            SiCanva,
+  'Suno AI':          SiSuno,
+  'Seedance':         FaVideo,
+  'Microsoft Office': FaMicrosoft,
+  'OBS Studio':       SiObsstudio,
+  'Roblox Studio':    SiRobloxstudio,
+  'Trello':           SiTrello,
+  'Google Workspace': SiGoogle,
+  'Looker Studio':    SiLooker,
+  'ElevenLabs':       SiElevenlabs,
 }
+
+// Skill → logo image (untuk brand yang butuh logo gambar, bukan icon monochrome)
+export const skillLogoMap: Record<string, string> = {}
 
 // Contact label → icon
 export const contactIconMap: Record<string, IconType> = {
@@ -73,4 +90,5 @@ export const categoryIconMap: Record<string, IconType> = {
   'AI & Automation': FaBrain,
   'API Integration': FaPlug,
   'Tools':           FaTools,
+  'Creative & Productivity': FaPalette,
 }

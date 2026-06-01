@@ -15,7 +15,7 @@ export const projects: Project[] = [
       "Web-based point-of-sale system with Midtrans payment integration, inventory management, and real-time sales reporting for small businesses.",
     tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "Midtrans"],
     github: "https://github.com/alifsastro2/pos-cashier",
-    live: null,
+    live: "http://pos.digitalbnb.my.id/",
     type: "Web App",
     image: null,
   },
@@ -30,7 +30,7 @@ export const projects: Project[] = [
     image: null,
   },
   {
-    title: "TSAS — Water Therapy App",
+    title: "Water Therapy Management App",
     description:
       "Multi-role Android app for water therapy management with automated revenue sharing, session attendance, multi-method payments, and dynamic PDF reports.",
     tags: ["Flutter", "Dart", "Supabase"],
@@ -40,7 +40,7 @@ export const projects: Project[] = [
     image: null,
   },
   {
-    title: "Warung Gemoy",
+    title: "Home Catering App",
     description:
       "Home catering Android app with real-time order tracking, AI-powered assistant via Claude, Google Maps delivery fee calculation, and Firebase FCM notifications.",
     tags: ["Flutter", "Dart", "Firebase", "Google Maps SDK", "Claude AI"],
@@ -50,7 +50,7 @@ export const projects: Project[] = [
     image: null,
   },
   {
-    title: "CACS Facilities Management",
+    title: "Company Profile Website",
     description:
       "Dynamic company profile website for a cleaning & maintenance company operating in Indonesia and Malaysia, with custom PHP CMS and Google Analytics integration.",
     tags: ["PHP", "Bootstrap", "Google Analytics API"],
@@ -88,5 +88,9 @@ export const skillCategories: SkillCategory[] = [
   {
     name: "Tools",
     items: ["Git", "GitHub", "Postman", "Jira", "TestRail", "VS Code", "Android Studio"],
+  },
+  {
+    name: "Creative & Productivity",
+    items: ["Canva", "Suno AI", "Seedance", "Microsoft Office", "OBS Studio", "Roblox Studio", "Trello", "Google Workspace", "Looker Studio", "ElevenLabs"],
   },
 ]

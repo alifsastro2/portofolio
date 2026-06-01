@@ -1,13 +1,35 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { animate, stagger } from 'animejs'
+import Image from 'next/image'
 import type { AboutContent } from '@/lib/supabase/types'
+import { SiNetflix } from 'react-icons/si'
+import { HiSparkles } from 'react-icons/hi2'
 
 const stats = [
   { value: '4+', label: 'Years Experience' },
   { value: '5+', label: 'Projects Shipped' },
   { value: '2', label: 'Platforms (Web & Mobile)' },
   { value: '∞', label: 'Lines of Coffee' },
+]
+
+type Hobby = {
+  Icon?: typeof SiNetflix
+  logo?: string
+  color: string
+  label: string
+  desc: string
+}
+
+const hobbies: Hobby[] = [
+  { Icon: SiNetflix, color: '#E50914', label: 'Netflix', desc: 'Binge-watching series & movies' },
+  { logo: '/mlbb-m.png', color: '#e4c482', label: 'Mobile Legends', desc: 'Ranked with friends' },
+  { Icon: HiSparkles, color: '#06b6d4', label: 'Exploring AI', desc: 'Tinkering with new AI tools & workflows' },
+]
+
+const languages = [
+  { flag: '🇮🇩', name: 'Indonesian', level: 'Native', dots: 5 },
+  { flag: '🇬🇧', name: 'English', level: 'Intermediate', dots: 3 },
 ]
 
 const defaults = {
@@ -51,21 +73,98 @@ export default function About({ about }: { about: AboutContent | null }) {
 
   return (
     <section id="about" ref={sectionRef} className="relative py-28 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
-        {/* Left: Photo */}
-        <div className="about-item opacity-0 flex justify-center lg:justify-start">
-          <div className="relative w-64 h-64 lg:w-80 lg:h-80">
-            <div className="absolute inset-0 rounded-2xl border border-[#06b6d4]/20 bg-[#161616] flex items-center justify-center overflow-hidden">
-              <div className="flex flex-col items-center gap-3 text-gray-700">
-                <div className="w-20 h-20 rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/20 flex items-center justify-center">
-                  <span className="font-mono text-2xl text-[#06b6d4]/60">AAZ</span>
-                </div>
-                <span className="font-mono text-xs text-gray-600">[ photo coming soon ]</span>
+        {/* Left: Photo + Hobbies */}
+        <div className="space-y-6">
+          <div className="about-item opacity-0 flex justify-center lg:justify-start">
+            <div className="group relative w-72 sm:w-80 aspect-[3/4]">
+              <div className="absolute inset-0 rounded-2xl border border-[#06b6d4]/20 bg-[#161616] overflow-hidden">
+                {/* Foto default (lihat samping) */}
+                <Image
+                  src="/about-default.png"
+                  alt="Alif Ardezir Zidane"
+                  fill
+                  className="object-cover transition-opacity duration-500 ease-out group-hover:opacity-0"
+                />
+                {/* Foto hover (lihat kamera) — crossfade saat mouse di atas */}
+                <Image
+                  src="/about-hover.png"
+                  alt="Alif Ardezir Zidane"
+                  fill
+                  className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                />
+                {/* gradient bawah biar nyatu dengan tema gelap */}
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0f0f0f]/60 to-transparent pointer-events-none" />
+                {/* hint kecil */}
+                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 font-mono text-[9px] text-gray-400/70 opacity-100 group-hover:opacity-0 transition-opacity duration-300 whitespace-nowrap">
+                  ✦ touch me
+                </span>
               </div>
+              <div className="absolute -bottom-3 -right-3 w-20 h-20 border-b-2 border-r-2 border-[#06b6d4]/40 rounded-br-2xl pointer-events-none" />
+              <div className="absolute -top-3 -left-3 w-20 h-20 border-t-2 border-l-2 border-[#06b6d4]/20 rounded-tl-2xl pointer-events-none" />
             </div>
-            <div className="absolute -bottom-3 -right-3 w-20 h-20 border-b-2 border-r-2 border-[#06b6d4]/40 rounded-br-2xl" />
-            <div className="absolute -top-3 -left-3 w-20 h-20 border-t-2 border-l-2 border-[#06b6d4]/20 rounded-tl-2xl" />
+          </div>
+
+          {/* Hobbies */}
+          <div className="about-item opacity-0">
+            <p className="font-mono text-[9px] text-gray-600 tracking-[0.3em] uppercase mb-3">
+              When I&apos;m not coding
+            </p>
+            <div className="space-y-2.5">
+              {hobbies.map((h) => (
+                <div
+                  key={h.label}
+                  className="flex items-center gap-3 p-3 bg-[#161616] border border-[#1e1e1e] rounded-xl hover:border-[#06b6d4]/20 transition-colors group"
+                >
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${h.color}18`, border: `1px solid ${h.color}30` }}
+                  >
+                    {h.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={h.logo} alt={h.label} className="w-7 h-7 object-contain" />
+                    ) : h.Icon ? (
+                      <h.Icon size={16} style={{ color: h.color }} />
+                    ) : null}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-200 font-medium">{h.label}</p>
+                    <p className="text-xs text-gray-600 font-mono">{h.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div className="about-item opacity-0">
+            <p className="font-mono text-[9px] text-gray-600 tracking-[0.3em] uppercase mb-3">
+              Languages
+            </p>
+            <div className="space-y-2.5">
+              {languages.map((l) => (
+                <div
+                  key={l.name}
+                  className="flex items-center gap-3 p-3 bg-[#161616] border border-[#1e1e1e] rounded-xl"
+                >
+                  <span className="text-lg flex-shrink-0">{l.flag}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-200 font-medium">{l.name}</p>
+                    <p className="text-xs text-gray-600 font-mono">{l.level}</p>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {[1, 2, 3, 4, 5].map((d) => (
+                      <span
+                        key={d}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ backgroundColor: d <= l.dots ? '#06b6d4' : '#2a2a2a' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -80,6 +179,38 @@ export default function About({ about }: { about: AboutContent | null }) {
 
           <p className="about-item opacity-0 text-gray-500 leading-relaxed text-sm">{bio_1}</p>
           <p className="about-item opacity-0 text-gray-500 leading-relaxed text-sm">{bio_2}</p>
+
+          {/* Founder card — Digital bNb */}
+          <a
+            href="http://digitalbnb.my.id/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="about-item opacity-0 group block rounded-xl border border-[#06b6d4]/25 p-5 transition-all duration-300 hover:border-[#06b6d4]/50"
+            style={{ background: 'radial-gradient(circle at 15% 0%, #06b6d418 0%, #161616 55%)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-[9px] text-[#06b6d4] tracking-[0.3em] uppercase flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rotate-45 bg-[#06b6d4]" /> Founder
+              </span>
+              <span className="text-[10px] font-mono text-gray-500 group-hover:text-[#06b6d4] transition-colors flex items-center gap-1">
+                visit <span className="group-hover:translate-x-0.5 transition-transform inline-block">↗</span>
+              </span>
+            </div>
+            <h3 className="text-white font-bold text-lg leading-none">
+              Digital <span className="text-[#06b6d4]">bNb</span>
+            </h3>
+            <p className="text-gray-500 text-xs font-mono mt-1.5">Build &amp; Boost Your Business</p>
+            <p className="text-gray-500 text-sm leading-relaxed mt-3">
+              A digital agency I founded — turning ideas into web apps, mobile apps, POS systems &amp; digital invitations.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-[#1e1e1e]">
+              {['Websites', 'Mobile Apps', 'POS', 'Invitations'].map((s) => (
+                <span key={s} className="px-2 py-0.5 text-[10px] font-mono text-gray-400 bg-[#0f0f0f] border border-[#2a2a2a] rounded group-hover:border-[#06b6d4]/20 transition-colors">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </a>
 
           <div className="about-item opacity-0 flex flex-wrap gap-3 pt-2">
             <span className="px-3 py-1 text-xs font-mono bg-[#06b6d4]/10 border border-[#06b6d4]/20 text-[#06b6d4] rounded">
