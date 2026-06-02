@@ -1,5 +1,5 @@
 import { createClient } from './server'
-import type { Project, BlogPost, AboutContent, ContactLink, Certificate } from './types'
+import type { Project, AboutContent, ContactLink, Certificate } from './types'
 import {
   projects as staticProjects,
   skillCategories as staticSkillCategories,
@@ -38,20 +38,6 @@ export async function getSkillCategories(): Promise<SkillCategoryWithItems[]> {
     }))
   } catch {
     return staticSkillCategories
-  }
-}
-
-export async function getBlogPosts(): Promise<BlogPost[]> {
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-    return data ?? []
-  } catch {
-    return []
   }
 }
 
