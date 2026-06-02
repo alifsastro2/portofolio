@@ -52,7 +52,7 @@ export default function Navbar() {
             download="Alif Ardezir Zidane - CV.pdf"
             className="px-4 py-1.5 text-sm font-mono border border-[#06b6d4]/40 text-[#06b6d4] rounded hover:bg-[#06b6d4]/10 hover:border-[#06b6d4] transition-all duration-200"
           >
-            Resume ↓
+            Download CV ↓
           </a>
         </div>
 
@@ -71,7 +71,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
-          menuOpen ? 'max-h-64 border-b border-[#1e1e1e]' : 'max-h-0'
+          menuOpen ? 'max-h-96 border-b border-[#1e1e1e]' : 'max-h-0'
         } bg-[#0f0f0f]/95 backdrop-blur-xl`}
       >
         <div className="flex flex-col gap-1 px-6 py-4">
@@ -91,7 +91,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="mt-2 py-2 text-center text-sm font-mono border border-[#06b6d4]/40 text-[#06b6d4] rounded hover:bg-[#06b6d4]/10 hover:border-[#06b6d4] transition-all"
           >
-            Resume ↓
+            Download CV ↓
           </a>
         </div>
       </div>
