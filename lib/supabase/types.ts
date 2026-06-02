@@ -118,6 +118,34 @@ export type Database = {
           display_order?: number
         }
       }
+      certificates: {
+        Row: {
+          id: string
+          title: string
+          issuer: string | null
+          year: string | null
+          image_url: string
+          pdf_url: string | null
+          display_order: number
+          created_at: string
+        }
+        Insert: {
+          title: string
+          issuer?: string | null
+          year?: string | null
+          image_url: string
+          pdf_url?: string | null
+          display_order?: number
+        }
+        Update: {
+          title?: string
+          issuer?: string | null
+          year?: string | null
+          image_url?: string
+          pdf_url?: string | null
+          display_order?: number
+        }
+      }
     }
   }
 }
@@ -128,3 +156,4 @@ export type Skill = Database['public']['Tables']['skills']['Row']
 export type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 export type AboutContent = Database['public']['Tables']['about_content']['Row']
 export type ContactLink = Database['public']['Tables']['contact_links']['Row']
+export type Certificate = Database['public']['Tables']['certificates']['Row']

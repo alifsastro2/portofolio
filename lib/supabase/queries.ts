@@ -1,8 +1,9 @@
 import { createClient } from './server'
-import type { Project, BlogPost, AboutContent, ContactLink } from './types'
+import type { Project, BlogPost, AboutContent, ContactLink, Certificate } from './types'
 import {
   projects as staticProjects,
   skillCategories as staticSkillCategories,
+  certificates as staticCertificates,
 } from '@/lib/data'
 
 export type SkillCategoryWithItems = { name: string; items: string[] }
@@ -61,6 +62,20 @@ export async function getAboutContent(): Promise<AboutContent | null> {
     return data
   } catch {
     return null
+  }
+}
+
+export async function getCertificates(): Promise<Certificate[]> {
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('certificates')
+      .select('*')
+      .order('display_order')
+    if (!data || data.length === 0) return staticCertificates
+    return data
+  } catch {
+    return staticCertificates
   }
 }
 

@@ -12,14 +12,16 @@ import {
   getSkillCategories,
   getAboutContent,
   getContactLinks,
+  getCertificates,
 } from '@/lib/supabase/queries'
 
 export default async function Home() {
-  const [projects, skillCategories, about, contactLinks] = await Promise.all([
+  const [projects, skillCategories, about, contactLinks, certificates] = await Promise.all([
     getProjects(),
     getSkillCategories(),
     getAboutContent(),
     getContactLinks(),
+    getCertificates(),
   ])
 
   return (
@@ -30,7 +32,7 @@ export default async function Home() {
         <About about={about} />
         <Skills skillCategories={skillCategories} />
         <Projects projects={projects} />
-        <Certificates />
+        <Certificates certs={certificates} />
         <Contact links={contactLinks} />
       </main>
       <Footer />

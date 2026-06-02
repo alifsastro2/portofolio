@@ -94,3 +94,39 @@ export const skillCategories: SkillCategory[] = [
     items: ["Canva", "Suno AI", "Seedance", "Microsoft Office", "OBS Studio", "Roblox Studio", "Trello", "Google Workspace", "Looker Studio", "ElevenLabs"],
   },
 ]
+
+// Static fallback for Certificates (used when Supabase has no rows / is unreachable).
+// Shape mirrors the `certificates` table Row type.
+export type CertificateFallback = {
+  id: string
+  title: string
+  issuer: string | null
+  year: string | null
+  image_url: string
+  pdf_url: string | null
+  display_order: number
+  created_at: string
+}
+
+const certSlugs: { slug: string; title: string; issuer: string; year: string }[] = [
+  { slug: 'business-intelligence', title: 'Creating Business Intelligence',           issuer: 'Universitas Gunadarma', year: 'Jun 2025' },
+  { slug: 'data-analytics',        title: 'Data Analytics',                            issuer: 'RevoU',                 year: 'Mar 2025' },
+  { slug: 'oracle-intermediate',   title: 'Oracle for Intermediate',                   issuer: 'Universitas Gunadarma', year: 'Aug 2024' },
+  { slug: 'data-prep',             title: 'Data Preparation for Business Processes',   issuer: 'Universitas Gunadarma', year: 'Sep 2024' },
+  { slug: 'html5',                 title: 'Building Website using HTML5',              issuer: 'Universitas Gunadarma', year: 'May 2023' },
+  { slug: 'java',                  title: 'Java Programming (J2SE)',                   issuer: 'Universitas Gunadarma', year: 'Feb 2023' },
+  { slug: 'oracle-beginner',       title: 'Oracle for Beginner',                       issuer: 'Universitas Gunadarma', year: 'Feb 2023' },
+  { slug: 'dbms',                  title: 'Fundamental DBMS',                          issuer: 'Universitas Gunadarma', year: 'Aug 2022' },
+  { slug: 'erp',                   title: 'Fundamental ERP',                           issuer: 'Universitas Gunadarma', year: 'Feb 2022' },
+]
+
+export const certificates: CertificateFallback[] = certSlugs.map((c, i) => ({
+  id: c.slug,
+  title: c.title,
+  issuer: c.issuer,
+  year: c.year,
+  image_url: `/certificates/${c.slug}.png`,
+  pdf_url: `/certificates/${c.slug}.pdf`,
+  display_order: i,
+  created_at: new Date().toISOString(),
+}))

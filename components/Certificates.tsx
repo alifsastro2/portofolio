@@ -2,26 +2,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 import Image from 'next/image'
+import type { Certificate } from '@/lib/supabase/types'
 
-type Cert = { slug: string; title: string; issuer: string; year: string }
-
-const certs: Cert[] = [
-  { slug: 'business-intelligence', title: 'Creating Business Intelligence',      issuer: 'Universitas Gunadarma', year: 'Jun 2025' },
-  { slug: 'data-analytics',        title: 'Data Analytics',                      issuer: 'RevoU',                 year: 'Mar 2025' },
-  { slug: 'oracle-intermediate',   title: 'Oracle for Intermediate',            issuer: 'Universitas Gunadarma', year: 'Aug 2024' },
-  { slug: 'data-prep',             title: 'Data Preparation for Business Processes', issuer: 'Universitas Gunadarma', year: 'Sep 2024' },
-  { slug: 'html5',                 title: 'Building Website using HTML5',         issuer: 'Universitas Gunadarma', year: 'May 2023' },
-  { slug: 'java',                  title: 'Java Programming (J2SE)',             issuer: 'Universitas Gunadarma', year: 'Feb 2023' },
-  { slug: 'oracle-beginner',       title: 'Oracle for Beginner',                issuer: 'Universitas Gunadarma', year: 'Feb 2023' },
-  { slug: 'dbms',                  title: 'Fundamental DBMS',                    issuer: 'Universitas Gunadarma', year: 'Aug 2022' },
-  { slug: 'erp',                   title: 'Fundamental ERP',                    issuer: 'Universitas Gunadarma', year: 'Feb 2022' },
-]
-
-export default function Certificates() {
+export default function Certificates({ certs }: { certs: Certificate[] }) {
   const sectionRef = useRef<HTMLElement>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const animatedRef = useRef(false)
-  const [active, setActive] = useState<Cert | null>(null)
+  const [active, setActive] = useState<Certificate | null>(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -83,13 +70,13 @@ export default function Certificates() {
         >
           {certs.map((cert) => (
             <button
-              key={cert.slug}
+              key={cert.id}
               onClick={() => setActive(cert)}
               className="cert-card opacity-0 group flex-shrink-0 w-[220px] snap-start text-left bg-[#161616] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-[#06b6d4]/30 transition-all duration-300 hover:shadow-[0_0_30px_#06b6d410]"
             >
               <div className="relative w-full aspect-[3/4] bg-[#0f0f0f] overflow-hidden flex items-center justify-center p-2">
                 <Image
-                  src={`/certificates/${cert.slug}.png`}
+                  src={cert.image_url}
                   alt={cert.title}
                   fill
                   className="object-contain transition-transform duration-500 group-hover:scale-105"
@@ -127,17 +114,19 @@ export default function Certificates() {
 
             <div className="flex-1 min-h-0 overflow-auto rounded-xl border border-[#1e1e1e] bg-[#161616]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/certificates/${active.slug}.png`} alt={active.title} className="w-full h-auto" />
+              <img src={active.image_url} alt={active.title} className="w-full h-auto" />
             </div>
 
-            <a
-              href={`/certificates/${active.slug}.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 self-center px-5 py-2 bg-[#06b6d4] text-black text-sm font-semibold rounded-lg hover:bg-[#22d3ee] transition-colors"
-            >
-              Open original PDF ↗
-            </a>
+            {active.pdf_url && (
+              <a
+                href={active.pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 self-center px-5 py-2 bg-[#06b6d4] text-black text-sm font-semibold rounded-lg hover:bg-[#22d3ee] transition-colors"
+              >
+                Open original PDF ↗
+              </a>
+            )}
           </div>
         </div>
       )}
