@@ -49,7 +49,7 @@ export default function Navbar() {
           ))}
           <a
             href="/cv.pdf"
-            download
+            download="Alif Ardezir Zidane - CV.pdf"
             className="px-4 py-1.5 text-sm font-mono border border-[#06b6d4]/40 text-[#06b6d4] rounded hover:bg-[#06b6d4]/10 hover:border-[#06b6d4] transition-all duration-200"
           >
             Resume ↓
@@ -85,6 +85,14 @@ export default function Navbar() {
               {label}
             </a>
           ))}
+          <a
+            href="/cv.pdf"
+            download="Alif Ardezir Zidane - CV.pdf"
+            onClick={() => setMenuOpen(false)}
+            className="mt-2 py-2 text-center text-sm font-mono border border-[#06b6d4]/40 text-[#06b6d4] rounded hover:bg-[#06b6d4]/10 hover:border-[#06b6d4] transition-all"
+          >
+            Resume ↓
+          </a>
         </div>
       </div>
     </nav>

@@ -97,6 +97,13 @@ export default function Hero() {
             >
               Contact Me
             </a>
+            <a
+              href="/cv.pdf"
+              download="Alif Ardezir Zidane - CV.pdf"
+              className="px-6 py-3 border border-[#2a2a2a] text-gray-300 rounded-lg hover:border-[#06b6d4]/40 hover:text-[#06b6d4] transition-all text-sm inline-flex items-center gap-2"
+            >
+              Download CV ↓
+            </a>
           </div>
 
           <div className="hero-item opacity-0 flex items-center gap-5 pt-2">
