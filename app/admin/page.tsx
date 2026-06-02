@@ -7,17 +7,17 @@ export default async function AdminDashboard() {
   const [
     { count: projectCount },
     { count: skillCount },
-    { count: blogCount },
+    { count: certCount },
   ] = await Promise.all([
     supabase.from('projects').select('*', { count: 'exact', head: true }),
     supabase.from('skills').select('*', { count: 'exact', head: true }),
-    supabase.from('blog_posts').select('*', { count: 'exact', head: true }),
+    supabase.from('certificates').select('*', { count: 'exact', head: true }),
   ])
 
   const stats = [
     { label: 'Projects', count: projectCount ?? 0, href: '/admin/projects', icon: '◈' },
     { label: 'Skills', count: skillCount ?? 0, href: '/admin/skills', icon: '◉' },
-    { label: 'Blog Posts', count: blogCount ?? 0, href: '/admin/blog', icon: '◎' },
+    { label: 'Certificates', count: certCount ?? 0, href: '/admin/certificates', icon: '❖' },
   ]
 
   return (
@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
           { label: 'Edit About', href: '/admin/about', desc: 'Update bio, location, availability' },
           { label: 'Edit Contact', href: '/admin/contact', desc: 'Update contact links' },
           { label: 'Add Project', href: '/admin/projects', desc: 'Add a new project to portfolio' },
-          { label: 'Write Blog Post', href: '/admin/blog', desc: 'Draft or publish a new post' },
+          { label: 'Add Certificate', href: '/admin/certificates', desc: 'Upload a new certificate' },
         ].map((q) => (
           <Link
             key={q.label}
