@@ -21,10 +21,10 @@ Founder — Digital bNb:
 
 Technical Skills:
 - Mobile: Flutter, Dart, Android Deployment
-- Web & Backend: Next.js, TypeScript, PHP, Laravel, JavaScript, REST API
+- Web & Backend: Next.js, React, TypeScript, JavaScript, Tailwind CSS, PHP, Laravel, REST API
 - Database: PostgreSQL, MySQL, Supabase, Firebase, Prisma
 - Payment: Xendit, Midtrans
-- AI & Automation: Claude Code, OpenAI API, n8n, Prompt Engineering
+- AI & Automation: Claude Code, OpenAI API, Groq (LLM API for the site's AI assistant), n8n, Prompt Engineering
 - API: Google Maps SDK, Distance Matrix API, Google Analytics API
 - Tools: Git, GitHub, Postman, Jira, TestRail, VS Code, Android Studio
 - Creative & Productivity: Canva, Suno AI, Seedance, Microsoft Office, OBS Studio, Roblox Studio, Trello, Google Workspace, Looker Studio, ElevenLabs

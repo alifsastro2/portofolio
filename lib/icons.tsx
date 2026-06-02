@@ -9,12 +9,14 @@ import {
   SiWhatsapp, SiGmail,
   SiCanva, SiSuno, SiObsstudio, SiRobloxstudio,
   SiTrello, SiGoogle, SiLooker, SiElevenlabs,
+  SiTailwindcss, SiReact, SiVercel, SiHtml5, SiFfmpeg,
 } from 'react-icons/si'
 import {
   FaEnvelope, FaMobileAlt, FaCode, FaDatabase,
   FaCreditCard, FaBrain, FaPlug, FaTools, FaLinkedin,
-  FaPalette, FaMicrosoft, FaVideo,
+  FaPalette, FaMicrosoft, FaVideo, FaBolt, FaWaveSquare,
 } from 'react-icons/fa'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { VscVscode, VscTerminal } from 'react-icons/vsc'
 
 // Tech skill → icon
@@ -24,12 +26,18 @@ export const skillIconMap: Record<string, IconType> = {
   'Dart':               SiDart,
   'Android Deployment': FaMobileAlt,
   // Web & Backend
-  'Next.js':    SiNextdotjs,
-  'TypeScript': SiTypescript,
-  'JavaScript': SiJavascript,
-  'PHP':        SiPhp,
-  'Laravel':    SiLaravel,
-  'REST API':   FaPlug,
+  'Next.js':      SiNextdotjs,
+  'React':        SiReact,
+  'TypeScript':   SiTypescript,
+  'JavaScript':   SiJavascript,
+  'Tailwind CSS': SiTailwindcss,
+  'Anime.js':     FaWandMagicSparkles,
+  'HTML5 Canvas': SiHtml5,
+  'Web Audio API': FaWaveSquare,
+  'next/og':      SiNextdotjs,
+  'PHP':          SiPhp,
+  'Laravel':      SiLaravel,
+  'REST API':     FaPlug,
   // Database
   'PostgreSQL': SiPostgresql,
   'MySQL':      SiMysql,
@@ -42,6 +50,7 @@ export const skillIconMap: Record<string, IconType> = {
   // AI & Automation
   'Claude Code':        VscTerminal,
   'OpenAI API':         SiOpenai,
+  'Groq':               FaBolt,
   'n8n':                SiN8N,
   'Prompt Engineering': FaBrain,
   // API Integration
@@ -56,6 +65,8 @@ export const skillIconMap: Record<string, IconType> = {
   'TestRail':       FaCode,
   'VS Code':        VscVscode,
   'Android Studio': SiAndroidstudio,
+  'Vercel':         SiVercel,
+  'FFmpeg':         SiFfmpeg,
   // Creative & Productivity (non-coding)
   'Canva':            SiCanva,
   'Suno AI':          SiSuno,

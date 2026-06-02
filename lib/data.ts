@@ -70,7 +70,7 @@ export const skillCategories: SkillCategory[] = [
   { name: "Mobile", items: ["Flutter", "Dart", "Android Deployment"] },
   {
     name: "Web & Backend",
-    items: ["Next.js", "TypeScript", "PHP", "Laravel", "JavaScript", "REST API"],
+    items: ["Next.js", "React", "TypeScript", "JavaScript", "Tailwind CSS", "Anime.js", "HTML5 Canvas", "Web Audio API", "next/og", "PHP", "Laravel", "REST API"],
   },
   {
     name: "Database",
@@ -79,7 +79,7 @@ export const skillCategories: SkillCategory[] = [
   { name: "Payment", items: ["Xendit", "Midtrans"] },
   {
     name: "AI & Automation",
-    items: ["Claude Code", "OpenAI API", "n8n", "Prompt Engineering"],
+    items: ["Claude Code", "OpenAI API", "Groq", "n8n", "Prompt Engineering"],
   },
   {
     name: "API Integration",
@@ -87,7 +87,7 @@ export const skillCategories: SkillCategory[] = [
   },
   {
     name: "Tools",
-    items: ["Git", "GitHub", "Postman", "Jira", "TestRail", "VS Code", "Android Studio"],
+    items: ["Git", "GitHub", "Vercel", "FFmpeg", "Postman", "Jira", "TestRail", "VS Code", "Android Studio"],
   },
   {
     name: "Creative & Productivity",
